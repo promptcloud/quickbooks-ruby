@@ -38,22 +38,34 @@ module Quickbooks
       end
 
       def fetch_by_id(id, params = {})
-        url = "#{url_for_resource(model.resource_for_singular)}/#{id}"
+        url = "#{url_for_resource(model.resource_for_singular)}/#{id}?minorversion=4"
         fetch_object(model, url, params)
       end
 
       def create(entity, options = {})
         raise Quickbooks::InvalidModelException.new(entity.errors.full_messages.join(',')) unless entity.valid?
         xml = entity.to_xml_ns(options)
-
-        response = do_http_post(url_for_resource(model.resource_for_singular), valid_xml_document(xml), options[:query])
+        url = url_for_resource(model.resource_for_singular) +'?minorversion=4'
+        response = do_http_post(url, valid_xml_document(xml), options[:query])
         if response.code.to_i == 200
           model.from_xml(parse_singular_entity_response(model, response.plain_body))
         else
           nil
         end
       end
-      alias :update :create
+      #alias :update :create
+
+      def update(entity, options = {})
+        raise Quickbooks::InvalidModelException.new(entity.errors.full_messages.join(',')) unless entity.valid?
+        xml = entity.to_xml_ns(options)
+        url = url_for_resource(model.resource_for_singular) + "?operation=update&minorversion=4"
+        response = do_http_post(url, valid_xml_document(xml), options[:query])
+        if response.code.to_i == 200
+          model.from_xml(parse_singular_entity_response(model, response.plain_body))
+        else
+          nil
+        end
+      end
 
       def delete(entity)
         raise NotImplementedError

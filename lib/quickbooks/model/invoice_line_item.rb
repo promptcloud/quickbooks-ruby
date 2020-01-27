@@ -11,6 +11,7 @@ module Quickbooks
       INVOICE_GROUP_LINE_DETAIL = 'GroupLineDetail'
       DESCRIPTION_LINE_DETAIL = 'DescriptionLineDetail'
       DESCRIPTION_DETAIL_TYPE = 'DescriptionOnly'
+      TDS_LINE_DETAIL = 'TDSLineDetail'
 
       xml_accessor :id, :from => 'Id'
       xml_accessor :line_num, :from => 'LineNum', :as => Integer
@@ -25,6 +26,7 @@ module Quickbooks
       xml_accessor :discount_line_detail, :from => DISCOUNT_LINE_DETAIL, :as => DiscountLineDetail
       xml_accessor :group_line_detail, :from => INVOICE_GROUP_LINE_DETAIL, :as => InvoiceGroupLineDetail
       xml_accessor :description_line_detail, :from => DESCRIPTION_LINE_DETAIL, :as => DescriptionLineDetail
+      xml_accessor :tds_line_detail, :from => TDS_LINE_DETAIL, :as => TdsLineDetail
 
       def group_line_detail?
         detail_type.to_s == INVOICE_GROUP_LINE_DETAIL
@@ -46,6 +48,10 @@ module Quickbooks
         # The detail type for a description-only line detail differs slightly
         # from the node name (DescriptionOnly vs DescriptionLineDetail)
         detail_type.to_s == DESCRIPTION_DETAIL_TYPE
+      end
+
+      def tds_item?
+        detail_type.to_s == TDS_LINE_DETAIL
       end
 
       def sales_item!
@@ -81,6 +87,13 @@ module Quickbooks
         self.description_line_detail = DescriptionLineDetail.new
 
         yield self.description_line_detail if block_given?
+      end
+
+      def tds_item!
+        self.detail_type = TDS_LINE_DETAIL
+        self.tds_line_detail = TdsLineDetail.new
+
+        yield self.tds_line_detail if block_given?
       end
 
     end

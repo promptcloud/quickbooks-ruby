@@ -51,6 +51,7 @@ module Quickbooks
       xml_accessor :resale_num, :from => 'ResaleNum'
       xml_accessor :suffix, :from => 'Suffix'
       xml_accessor :fully_qualified_name, :from => 'FullyQualifiedName'
+      xml_accessor :tds_enabled, :from => 'TDSEnabled'
       xml_accessor :taxable, :from => 'Taxable'
       xml_accessor :default_tax_code_ref, :from => 'DefaultTaxCodeRef', :as => BaseReference
       xml_accessor :notes, :from => 'Notes'
@@ -73,6 +74,10 @@ module Quickbooks
 
       def taxable?
         taxable.to_s == 'true'
+      end
+
+      def tds_enabled?
+        tds_enabled.to_s == 'true'
       end
     end
   end
